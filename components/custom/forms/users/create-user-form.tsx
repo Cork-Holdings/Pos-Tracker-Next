@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/select";
 
 const CreateUserSchema = z.object({
-    fullname: z.string().min(1, { message: "Name is required" }),
+    full_name: z.string().min(1, { message: "Name is required" }),
     email: z.string().email().min(1, { message: "Email is required" }),
     role: z.string().min(1, { message: "Role is required" }),
     password: z.string().min(8, { message: "A minimum of 8 characters is required" }),
@@ -47,7 +47,7 @@ const CreateUserForm = () => {
     const form = useForm<z.infer<typeof CreateUserSchema>>({
         resolver: zodResolver(CreateUserSchema),
         defaultValues: {
-            fullname:"",
+            full_name:"",
             email:"",
             role:"",
             password:""
@@ -59,7 +59,7 @@ const CreateUserForm = () => {
             setLoading(true)
 
             const body = {
-                "fullname": values.fullname,
+                "full_name": values.full_name,
                 "email": values.email,
                 "password": values.password,
                 "role": values.role
@@ -106,7 +106,7 @@ const CreateUserForm = () => {
                 >
                     <FormField
                         control={form.control}
-                        name="fullname"
+                        name="full_name"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="">Name</FormLabel>
