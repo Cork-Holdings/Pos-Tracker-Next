@@ -59,10 +59,10 @@ const CreateUserForm = () => {
             setLoading(true)
 
             const body = {
-                "full_name": values.full_name,
-                "email": values.email,
-                "password": values.password,
-                "role": values.role
+                fullname: values.full_name,
+                email: values.email,
+                password: values.password,
+                role: values.role,
             }
             const response = await fetch(api_endpoints.createUser, {
                 method: 'POST',
@@ -75,11 +75,13 @@ const CreateUserForm = () => {
 
             const result = await response.json()
 
-            if (result.status === 'success') {
-                toast.success("App successfully created!")
+            if (result.status === 'success' || result.success === true) {
+                toast.success("User successfully created!")
                 router.push("/admin/users")
-            } else if (result["status"] == "failure") {
-                toast.error(result["error"])
+            } else {
+                const errorMessage = result.error || result.message || "Failed to create user"
+                const detail = result.detail ? `\n${result.detail}` : ""
+                toast.error(`${errorMessage}${detail}`)
             }
         }
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
