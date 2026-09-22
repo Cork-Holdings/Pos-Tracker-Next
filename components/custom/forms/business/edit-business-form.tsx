@@ -60,6 +60,7 @@ const EditBusinessForm: React.FC<EditBusinessFormProps> = ({ business }) => {
             const formData = new FormData()
 
             const businessData = {
+                id: values.business_id,
                 name: values.name,
                 email: values.email,
                 address: values.address,
@@ -72,7 +73,7 @@ const EditBusinessForm: React.FC<EditBusinessFormProps> = ({ business }) => {
                 formData.append("file", values.logo)
             }
 
-            const response = await fetch(api_endpoints.createBusiness, {
+            const response = await fetch(api_endpoints.editBusiness, {
                 method: 'POST',
                 headers: {
                     // Remove 'Content-Type': FormData sets it automatically
@@ -84,7 +85,7 @@ const EditBusinessForm: React.FC<EditBusinessFormProps> = ({ business }) => {
             const result = await response.json()
 
             if (result.status === 'success') {
-                toast.success("Business successfully created!")
+                toast.success("Business updated successfully")
                window.location.reload()
                 // router.refresh() // Prefer router.refresh() over window.location.reload() for Next.js
             } else if (result.status === "failure") {

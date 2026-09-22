@@ -54,7 +54,7 @@ const DashboardPieChart = () => {
           offline_devices: data.info.offline_devices ?? 0,
           apps: data.info.apps ?? 0,
           app_version: data.info.app_version ?? 'N/A',
-          new_locations: data.locations_tracked ?? 0,
+          new_locations: data.info.locations_tracked ?? 0,
         });
       } else {
         setError('Unable to fetch dashboard pie chart data.');

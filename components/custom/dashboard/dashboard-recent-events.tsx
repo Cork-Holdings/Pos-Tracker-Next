@@ -17,7 +17,7 @@ import toast from 'react-hot-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type RawEvent = {
-  id: string;
+  event_id: string;
   title: string;
   date: string;
   metadata: string;
@@ -65,7 +65,7 @@ const DashboardRecentEvents = () => {
         const formatted = data.events.event.map((e: RawEvent) => {
           const metadata = JSON.parse(e.metadata);
           return {
-            id: e.id,
+            id: e.event_id,
             title: e.title,
             metadata,
             date: new Date(e.date).toLocaleString(),

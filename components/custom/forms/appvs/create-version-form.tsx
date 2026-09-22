@@ -31,8 +31,8 @@ const CreateAppVersionSchema = z.object({
     releaseNotes: z.string().min(1, { message: "Release notes is required" }),
     fileSize: z.string().min(1, { message: "File Size in Bytes" }),
     isLastestStable: z.boolean(),
-    apk: z.instanceof(File).optional().refine((file) => {
-        return !file || (file && file.size <= 200 * 1024 * 1024);
+    apk: z.instanceof(File, { message: "APK file is required" }).refine((file) => {
+        return file.size <= 200 * 1024 * 1024;
     }, "File must be under 200mb"),
     terminalTypeId: z.string(),
 })
@@ -100,10 +100,7 @@ const CreateAppVersionForm = ({ appid }: { appid: string }) => {
 
             formData.append("version", JSON.stringify(appData))
             formData.append("name", values.name)
-
-            if (values.apk) {
-                formData.append("file", values.apk)
-            }
+            formData.append("file", values.apk)
 
             const response = await fetch(api_endpoints.createAppVersion, {
                 method: 'POST',

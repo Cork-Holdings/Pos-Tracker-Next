@@ -89,8 +89,8 @@ const AllPosDevicesPage = () => {
     });
 
     // Add filters to query params if they have values
-    if (filters.business_id) queryParams.append('business_id', filters.business_id);
-    if (filters.status) queryParams.append('status', filters.status);
+    if (filters.business_id && filters.business_id !== 'all') queryParams.append('business_id', filters.business_id);
+    if (filters.status && filters.status !== 'all') queryParams.append('status', filters.status);
     if (filters.phone_number) queryParams.append('phone_number', filters.phone_number);
     if (filters.current_app_version) queryParams.append('current_app_version', filters.current_app_version);
     if (filters.serial_number) queryParams.append('serial_number', filters.serial_number);
@@ -164,7 +164,7 @@ const AllPosDevicesPage = () => {
           offline_devices: data.info.offline_devices ?? 0,
           apps: data.info.apps,
           app_version: data.info.app_version,
-          new_locations: data.locations_tracked ?? 0, // hardcoded for now
+          new_locations: data.info.locations_tracked ?? 0,
         })
       } else if (data.status == "failure") {
         toast.error("Unable to fetch dashboard information.")

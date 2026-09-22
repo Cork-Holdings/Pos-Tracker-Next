@@ -93,7 +93,7 @@ const EditAppVersionForm: React.FC<EditAppVersionFormProps> = ({ version }) => {
          
 
             if (values.apk) {
-                formData.append("file", values.apk)
+                formData.append("apk", values.apk)
             }
 
             const response = await fetch(api_endpoints.editAppVersion, {

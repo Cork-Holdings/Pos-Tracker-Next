@@ -60,7 +60,7 @@ const EditAppForm: React.FC<EditAppFormProps> = ({ app }) => {
             const response = await fetch(api_endpoints.editApp, {
                 method: 'POST',
                 headers: {
-                    // Remove 'Content-Type': FormData sets it automatically
+                    'Content-Type': 'application/json',
                     "Authorization": `Bearer ${session?.accessToken}`,
                 },
                 body: JSON.stringify(body),
