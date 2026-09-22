@@ -57,8 +57,12 @@ export const api_endpoints = {
     editBusiness: `${base_url}/business/update`,
     editApp: `${base_url}/app/info/update`,
 
+    //account self-service
+    changePassword: `${base_url}/user/password/change`,
+    changeEmail: `${base_url}/user/email/change`,
+
     //delete
-    deleteUser: `${base_url}/delete-user`,
+    deleteUser: `${base_url}/user/delete`,
     deleteApp: `${base_url}/app`,
     deleteAppVersion: `${base_url}/app/version`,
     deletePosDevice: `${base_url}/pos/device`,

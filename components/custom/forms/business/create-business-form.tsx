@@ -67,6 +67,11 @@ const CreateBusinessForm = () => {
                 formData.append("file", values.logo)
             }
 
+            if (!session?.accessToken) {
+                toast.error("You must be logged in to create a business")
+                return
+            }
+
             const response = await fetch(api_endpoints.createBusiness, {
                 method: 'POST',
                 headers: {
@@ -83,7 +88,8 @@ const CreateBusinessForm = () => {
                window.location.reload()
                 // router.refresh() // Prefer router.refresh() over window.location.reload() for Next.js
             } else if (result.status === "failure") {
-                toast.error(result.error)
+                const detail = result.detail ? `\n${result.detail}` : ""
+                toast.error(`${result.error || "Failed to create business"}${detail}`)
             } else {
                 toast.error("Failed to create business")
             }
@@ -198,7 +204,7 @@ const CreateBusinessForm = () => {
                     />
                     <Button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || !session?.accessToken}
                         className='md:row-start-5 md:col-start-1 bg-[#3c3c8c] '
                     >
                         {loading ? (

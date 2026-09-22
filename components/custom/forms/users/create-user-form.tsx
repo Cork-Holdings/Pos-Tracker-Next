@@ -58,6 +58,11 @@ const CreateUserForm = () => {
         try {
             setLoading(true)
 
+            if (!session?.accessToken) {
+                toast.error("You must be logged in to create a user")
+                return
+            }
+
             const body = {
                 fullname: values.full_name,
                 email: values.email,
@@ -199,11 +204,11 @@ const CreateUserForm = () => {
                     <Button
                         type="submit"
                         className="row-start-3"
-                        disabled={loading}
+                        disabled={loading || !session?.accessToken}
 
                     >
                         {loading ? (
-                            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating app...</>
+                            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Adding user...</>
                         ) : (
                             "Add user"
                         )}

@@ -53,23 +53,23 @@ const DashboardUsers = () => {
         },
       });
 
-      const responseBody = await response.json();
+      const responseBody = await response.json().catch(() => null);
 
-      if (responseBody.status === "success") {
-        const users = responseBody.users.user.map((user: User) => ({
+      if (response.ok && responseBody?.status === "success") {
+        const users = (responseBody.users?.user ?? []).map((user: User) => ({
           id: user.id,
           fullname: user.fullname,
           role: user.role,
-          status: user.status ?? false,
+          status: user.status === "active" ? "active" : "inactive",
           email: user.email,
         }));
 
-        console.log('users', users)
         setUserData(users);
-        setTotalPages(responseBody.users.totalPages || 0);
+        setTotalPages(responseBody.users?.totalPages || 0);
       } else {
-        setError(`${responseBody.error}\n${responseBody.detail}`);
-        toast.error(`${responseBody.error}\n${responseBody.detail}`);
+        const message = responseBody?.error ?? "Failed to fetch user data";
+        setError(message);
+        toast.error(message);
       }
     } catch (error) {
       setError(`Failed to fetch user data ${error}`);
@@ -96,18 +96,16 @@ const DashboardUsers = () => {
           }
         });
 
-        const responseBody = await response.json();
+        const responseBody = await response.json().catch(() => null);
 
-        if (responseBody["status"] === "success") {
-          toast.success(responseBody["message"]);
-          window.location.reload()
-          fetchUsers(); // Refresh the data instead of reloading the page
+        if (response.ok && responseBody?.status === "success") {
+          toast.success(responseBody.message);
+          fetchUsers();
         } else {
-          toast.error(responseBody["error"]);
+          toast.error(responseBody?.error ?? "Failed to delete user");
         }
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      catch (error) {
+      catch {
         toast.error(`Something went wrong, please try again`);
       } finally {
         setDeleteUser(null);
@@ -180,6 +178,7 @@ const DashboardUsers = () => {
             user={editUser}
             open={!!editUser}
             onClose={() => setEditUser(null)}
+            onUpdated={fetchUsers}
           />
 
           <Dialog open={!!deleteUser} onOpenChange={(open) => !open && setDeleteUser(null)}>

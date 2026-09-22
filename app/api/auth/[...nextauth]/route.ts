@@ -121,7 +121,7 @@ declare module "next-auth/jwt" {
             
             }
             if (token.tokenExpiry && Date.now() > new Date(token.tokenExpiry).getTime()) {
-                return { token}; // Invalidate token if expired
+                return {};
               }
             
             return token;

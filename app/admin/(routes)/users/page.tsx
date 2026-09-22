@@ -42,36 +42,31 @@ const AllUsersPage = () => {
       pageSize: String(pagination.pageSize),
     });
 
-    const response = await fetch(`${api_endpoints.getUsers}?${queryParams}`, {
-      headers: {
-        "Authorization": `Bearer ${session?.accessToken}`
-      }
-    });
+    try {
+      const response = await fetch(`${api_endpoints.getUsers}?${queryParams}`, {
+        headers: {
+          "Authorization": `Bearer ${session?.accessToken}`
+        }
+      });
 
-    
+      const responseBody = await response.json().catch(() => null);
 
-    const responseBody = await response.json();
-    if (responseBody["status"] === "success") {
-      if (responseBody?.users?.user) {
-        const users = responseBody.users.user.map((user: User) => ({
+      if (response.ok && responseBody?.status === "success") {
+        const users = (responseBody.users?.user ?? []).map((user: User) => ({
           id: user.id,
           fullname: user.fullname,
           role: user.role,
-          status: user.status ?? false,
+          status: user.status === "active" ? "active" : "inactive",
           email: user.email
         }))
         setUserData(users);
-        setTotalPages(responseBody.users.totalPages || 0);
-        setCount(responseBody.users.count || 0)
-      } // Set the fetched data
-    }
-    else if (responseBody["status"] == "failure") {
-      toast.error(`${responseBody.error}\n${responseBody.detail}`)
-    }
-
-
-    else {
-      toast.error("Failed to fetch user version data");
+        setTotalPages(responseBody.users?.totalPages || 0);
+        setCount(responseBody.users?.count || 0)
+      } else {
+        toast.error(responseBody?.error ?? "Failed to fetch user data");
+      }
+    } catch {
+      toast.error("Something went wrong, please try again");
     }
 
   }
@@ -92,18 +87,16 @@ const AllUsersPage = () => {
           }
         });
 
-        const responseBody = await response.json();
+        const responseBody = await response.json().catch(() => null);
 
-        if (responseBody["status"] === "success") {
-          toast.success(responseBody["message"]);
-          window.location.reload()
-          fetchUsers(); // Refresh the data instead of reloading the page
+        if (response.ok && responseBody?.status === "success") {
+          toast.success(responseBody.message);
+          fetchUsers();
         } else {
-          toast.error(responseBody["error"]);
+          toast.error(responseBody?.error ?? "Failed to delete user");
         }
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      catch (error) {
+      catch {
         toast.error(`Something went wrong, please try again`);
       } finally {
         setDeleteUser(null);
@@ -191,6 +184,7 @@ const AllUsersPage = () => {
             user={editUser}
             open={!!editUser}
             onClose={() => setEditUser(null)}
+            onUpdated={fetchUsers}
           />
 
           <Dialog open={!!deleteUser} onOpenChange={(open) => !open && setDeleteUser(null)}>

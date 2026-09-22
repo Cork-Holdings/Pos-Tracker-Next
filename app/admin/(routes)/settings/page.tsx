@@ -8,22 +8,31 @@ import { useSession } from 'next-auth/react';
 import { api_endpoints } from '@/utils/api_constants';
 import toast from 'react-hot-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-// import { useRouter } from 'next/navigation';
+import { UserStatus } from '@/utils/types/User';
+import ChangePasswordDialog from '@/components/custom/dialogs/users/change-password-dialog';
+import ChangeEmailDialog from '@/components/custom/dialogs/users/change-email-dialog';
 
 const SettingsPage = () => {
   const { data: session, status } = useSession();
-  // const router = useRouter()
 
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<{
+    fullname: string;
+    email: string;
+    id: string;
+    role: string;
+    status: UserStatus;
+  }>({
     fullname: '',
     email: '',
     id: '',
     role: '',
-    status: false,
+    status: 'inactive',
   });
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [changingEmail, setChangingEmail] = useState(false);
 
   const fetchUserInfo = async () => {
     setLoading(true);
@@ -35,10 +44,9 @@ const SettingsPage = () => {
         },
       });
 
-      const data = await res.json();
-      console.log('data', data);
+      const data = await res.json().catch(() => null);
 
-      if (data.status === 'success') {
+      if (res.ok && data?.status === 'success') {
         const user = data.data;
 
         setUserData({
@@ -46,10 +54,10 @@ const SettingsPage = () => {
           email: user.email ?? 'Not available',
           id: user.id ?? 'Not available',
           role: user.role ?? 'Not available',
-          status: user.status ?? false,
+          status: user.status === 'active' ? 'active' : 'inactive',
         });
       } else {
-        setError('Failed to retrieve user information.');
+        setError(data?.error ?? 'Failed to retrieve user information.');
         toast.error('Unable to fetch user information.');
       }
     } catch (err) {
@@ -98,22 +106,32 @@ const SettingsPage = () => {
               <div className="space-y-2">
                 <p>{userData.fullname}</p>
                 <p>{userData.email}</p>
-                <p>{userData.role}</p>
-                <p>{userData.status ? 'Active' : 'Inactive'}</p>
+                <p className="capitalize">{userData.role}</p>
+                <p>{userData.status === 'active' ? 'Active' : 'Inactive'}</p>
                 <div className="md:space-x-6 space-y-6 ">
-                  <Button
-                  // onClick={()=> router.push(`/admin/settings/password/${userData.id}`)}
-                  >Change Password</Button>
-                  <Button
-                  //  onClick={()=> router.push(`/admin/settings/email/${userData.id}`)}
-                 
-                  >Change Email</Button>
+                  <Button onClick={() => setChangingPassword(true)}>
+                    Change Password
+                  </Button>
+                  <Button onClick={() => setChangingEmail(true)}>
+                    Change Email
+                  </Button>
                 </div>
               </div>
             </>
           )}
         </CardContent>
       </Card>
+
+      <ChangePasswordDialog
+        open={changingPassword}
+        onClose={() => setChangingPassword(false)}
+      />
+      <ChangeEmailDialog
+        open={changingEmail}
+        currentEmail={userData.email}
+        onClose={() => setChangingEmail(false)}
+        onUpdated={fetchUserInfo}
+      />
     </main>
   );
 };

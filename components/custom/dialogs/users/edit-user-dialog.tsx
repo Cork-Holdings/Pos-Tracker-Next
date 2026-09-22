@@ -8,9 +8,10 @@ interface EditUserDialogProps {
   user: User | null;
   open: boolean;
   onClose: () => void;
+  onUpdated?: () => void;
 }
 
-const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, open, onClose }) => {
+const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, open, onClose, onUpdated }) => {
   if (!user) return null;
 
   return (
@@ -20,8 +21,15 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, open, onClose }) 
           <DialogTitle>User Details</DialogTitle>
         </DialogHeader>
         <div>
-        <EditUserForm user={user}/> 
-          </div>
+          <EditUserForm
+            key={user.id}
+            user={user}
+            onSuccess={() => {
+              onUpdated?.();
+              onClose();
+            }}
+          />
+        </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Close</Button>
         </DialogFooter>
